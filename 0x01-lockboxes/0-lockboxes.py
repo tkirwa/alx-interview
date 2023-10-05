@@ -1,38 +1,40 @@
 #!/usr/bin/python3
+"""
+Solution to lockboxes problem
+"""
+
 
 def canUnlockAll(boxes):
-    if not boxes:
+    """
+    Determines whether a series of locked boxes can be opened
+    based on keys that can be attained.
+
+    Args:
+    boxes (list of lists): A list of lists representing locked boxes
+                           and their corresponding keys.
+
+    Returns:
+    bool: True if all boxes can be opened, False otherwise.
+    """
+
+    # Check if boxes is not a list or is empty, return False
+    if not isinstance(boxes, list) or not boxes:
         return False
 
-    num_boxes = len(boxes)
-    unlocked = [False] * num_boxes
-    unlocked[0] = True  # The first box is always unlocked
-    stack = [0]  # Start with the first box
+    # Initialize a list to keep track of opened boxes...
+    #  the first box is open by default
+    opened_boxes = [False] * len(boxes)
+    opened_boxes[0] = True
 
-    while stack:
-        current_box = stack.pop()  # Pop the last box from the stack
+    # Iterate through the boxes to check if we can open all of them
+    for box_index, keys in enumerate(boxes):
+        if opened_boxes[box_index]:
+            # If the current box is already open, check its keys
+            for key in keys:
+                if 0 <= key < len(boxes) and not opened_boxes[key]:
+                    # If the key corresponds to a valid box and...
+                    #  that box is closed, open it
+                    opened_boxes[key] = True
 
-        # Iterate through the keys in the current box
-        for key in boxes[current_box]:
-            # Check if the key is valid (within bounds) and...
-            #  the corresponding box is not yet unlocked
-            if 0 <= key < num_boxes and not unlocked[key]:
-                # Mark the box as unlocked
-                unlocked[key] = True
-                # Add the box to the stack for further exploration
-                stack.append(key)
-
-    # Return True if all boxes are unlocked, else return False
-    return all(unlocked)
-
-
-# Example usage:
-# if __name__ == "__main__":
-#     boxes = [[1], [2], [3], [4], []]
-#     print(canUnlockAll(boxes))  # True
-
-#     boxes = [[1, 4, 6], [2], [0, 4, 1], [5, 6, 2], [3], [4, 1], [6]]
-#     print(canUnlockAll(boxes))  # True
-
-#     boxes = [[1, 4], [2], [0, 4, 1], [3], [], [4, 1], [5, 6]]
-#     print(canUnlockAll(boxes))  # False
+    # Check if all boxes are open
+    return all(opened_boxes)
