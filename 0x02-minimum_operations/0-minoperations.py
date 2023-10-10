@@ -22,7 +22,7 @@ def minOperations(n):
     clipboard = 1
     total = 1
 
-    for _ in range(n):
+    while total < n:
         if n % total == 0:
             clipboard = total
             operations += 1
