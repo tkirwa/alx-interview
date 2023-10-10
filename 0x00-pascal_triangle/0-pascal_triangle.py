@@ -1,38 +1,41 @@
 #!/usr/bin/python3
-
-def canUnlockAll(boxes):
-    if not boxes:
-        return False
-
-    num_boxes = len(boxes)
-    unlocked = [False] * num_boxes
-    unlocked[0] = True  # The first box is always unlocked
-    stack = [0]  # Start with the first box
-
-    while stack:
-        current_box = stack.pop()  # Pop the last box from the stack
-
-        # Iterate through the keys in the current box
-        for key in boxes[current_box]:
-            # Check if the key is valid (within bounds) and...
-            # the corresponding box is not yet unlocked
-            if 0 <= key < num_boxes and not unlocked[key]:
-                # Mark the box as unlocked
-                unlocked[key] = True
-                # Add the box to the stack for further exploration
-                stack.append(key)
-
-    # Return True if all boxes are unlocked, else return False
-    return all(unlocked)
+'''Module to find Pascal's Triangle integers'''
 
 
-# Example usage:
-if __name__ == "__main__":
-    boxes = [[1], [2], [3], [4], []]
-    print(canUnlockAll(boxes))  # True
+def pascal_triangle(n):
+    '''
+    Function to find Pascal's Triangle integers
 
-    boxes = [[1, 4, 6], [2], [0, 4, 1], [5, 6, 2], [3], [4, 1], [6]]
-    print(canUnlockAll(boxes))  # True
+    Parameters:
+        n (int): The number of row's of Pascal's triangle
 
-    boxes = [[1, 4], [2], [0, 4, 1], [3], [], [4, 1], [5, 6]]
-    print(canUnlockAll(boxes))  # False
+    Returns:
+        pascal_triangle (list): List of lists representing Pascal's triangle
+    '''
+
+    pascal_triangle = list()
+
+    if n <= 0:
+        return pascal_triangle
+
+    # Add first 1.
+    if n > 0:
+        pascal_triangle.append([1])
+
+    # Add second line.
+    if n > 1:
+        pascal_triangle.append([1, 1])
+
+    for x in range(3, n+1):
+        pascal_triangle.append([0] * x)
+
+        # Set first and last 1
+        pascal_triangle[x-1][0] = 1
+        pascal_triangle[x-1][x-1] = 1
+
+        # Calculate middle numbers
+        for y in range(1, x-1):
+            pascal_triangle[x-1][y] = \
+                pascal_triangle[x-2][y-1] + pascal_triangle[x-2][y]
+
+    return pascal_triangle
