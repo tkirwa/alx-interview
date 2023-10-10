@@ -21,7 +21,7 @@ def minOperations(n):
         return 0
 
     # Initialize a list to store the minimum operations for each number of
-    #  characters
+    # characters
     dp = [0] * (n + 1)
 
     for i in range(2, n + 1):
