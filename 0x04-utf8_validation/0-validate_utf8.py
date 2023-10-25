@@ -1,40 +1,48 @@
 #!/usr/bin/python3
 """
-This module contains a function to determine if a given data set represents
- a valid UTF-8 encoding.
+0-validate_utf8.py - This module contains a function to determine if a given
+ data set represents  a valid UTF-8 encoding.
 """
 
 
 def validUTF8(data):
     """
-    Check if a given data set represents a valid UTF-8 encoding.
+    This function checks if a list of integers represents a valid sequence of
+      UTF-8 characters.
 
     Args:
-        data (list of int): List of integers representing bytes of data.
+    data: List of integers where each integer represents 1 byte of data.
 
     Returns:
-        bool: True if data is a valid UTF-8 encoding, else False.
+    True if data is a valid UTF-8 encoding, else returns False.
     """
-    num_bytes = 0
 
-    for byte in data:
-        # Check if the most significant bit is 0 (it's a one-byte character)
-        if num_bytes == 0:
-            if byte >> 7 == 0b0:
-                num_bytes = 0
-            elif byte >> 5 == 0b110:
-                num_bytes = 1
-            elif byte >> 4 == 0b1110:
-                num_bytes = 2
-            elif byte >> 3 == 0b11110:
-                num_bytes = 3
-            else:
+    # Initialize count of continuation bytes
+    count = 0
+
+    # Iterate over each byte in data
+    for num in data:
+        # If no continuation bytes are expected
+        if count == 0:
+            # Check the number of bytes the current character should take
+            if (num >> 5) == 0b110:
+                count = 1
+            elif (num >> 4) == 0b1110:
+                count = 2
+            elif (num >> 3) == 0b11110:
+                count = 3
+            # If the byte starts with '10' or '11111', it's not a
+            #  valid start byte
+            elif num >> 7:
                 return False
         else:
-            # Check if the current byte starts with '10'
-            if byte >> 6 != 0b10:
+            # If a continuation byte is expected, check if the byte starts
+            #  with '10'
+            if (num >> 6) != 0b10:
                 return False
-            num_bytes -= 1
+            # Decrement the count of expected continuation bytes
+            count -= 1
 
-    # Check if all characters have been validated
-    return num_bytes == 0
+    # If all bytes are processed and no continuation byte is expected,
+    #  return True
+    return count == 0
