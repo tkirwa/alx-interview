@@ -1,40 +1,53 @@
 #!/usr/bin/python3
 """
-This module contains a function to determine if a given data set represents
+This module contains a function that checks if a given data set represents
  a valid UTF-8 encoding.
 """
 
 
 def validUTF8(data) -> bool:
     """
-    Check if a given data set represents a valid UTF-8 encoding.
+    Determines if a given data set represents a valid UTF-8 encoding.
 
     Args:
-        data (list of int): List of integers representing bytes of data.
+        data (list): List of integers where each integer represents 1 byte
+          of data.
 
     Returns:
-        bool: True if data is a valid UTF-8 encoding, else False.
+        bool: True if data is a valid UTF-8 encoding, else return False.
     """
+
+    # Initialize count of continuation bytes
     num_bytes = 0
 
+    # Iterate over each byte in data
     for byte in data:
-        # Check if the most significant bit is 0 (it's a one-byte character)
-        if num_bytes == 0:
-            if byte >> 7 == 0b0:
-                num_bytes = 0
-            elif byte >> 5 == 0b110:
-                num_bytes = 1
-            elif byte >> 4 == 0b1110:
-                num_bytes = 2
-            elif byte >> 3 == 0b11110:
-                num_bytes = 3
-            else:
+        # Initialize mask for checking the most significant bit of byte
+        mask = 1 << 7
+
+        # If no continuation bytes are expected
+        if not num_bytes:
+            # Count the number of most significant bits that are 1
+            while byte & mask:
+                num_bytes += 1
+                mask >>= 1
+
+            # If no most significant bits are 1, continue to next byte
+            if not num_bytes:
+                continue
+
+            # If only one most significant bit is 1 or more than four most
+            #  significant bits are 1, return False
+            if num_bytes == 1 or num_bytes > 4:
                 return False
         else:
-            # Check if the current byte starts with '10'
+            # If the two most significant bits are not '10', return False
             if byte >> 6 != 0b10:
                 return False
-            num_bytes -= 1
 
-    # Check if all characters have been validated
+            # Decrement the count of expected continuation bytes
+        num_bytes -= 1
+
+    # If all bytes are processed and no continuation byte is expected,
+    #  return True
     return num_bytes == 0
