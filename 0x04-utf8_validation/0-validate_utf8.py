@@ -1,48 +1,63 @@
 #!/usr/bin/python3
 """
-0-validate_utf8.py - This module contains a function to determine if a given
- data set represents  a valid UTF-8 encoding.
+This module contains a function that checks if a given data set represents
+ a valid UTF-8 encoding.
 """
 
 
 def validUTF8(data):
     """
-    This function checks if a list of integers represents a valid sequence of
-      UTF-8 characters.
+    Determines if a given data set represents a valid UTF-8 encoding.
 
     Args:
-    data: List of integers where each integer represents 1 byte of data.
+        data (list): List of integers where each integer represents
+          1 byte of data.
 
     Returns:
-    True if data is a valid UTF-8 encoding, else returns False.
+        bool: True if data is a valid UTF-8 encoding, else return False.
     """
 
     # Initialize count of continuation bytes
-    count = 0
+    n_bytes = 0
 
     # Iterate over each byte in data
     for num in data:
+        # Mask the most significant 8 bits of num to get the byte
+        byte = num & 0xFF
+
         # If no continuation bytes are expected
-        if count == 0:
-            # Check the number of bytes the current character should take
-            if (num >> 5) == 0b110:
-                count = 1
-            elif (num >> 4) == 0b1110:
-                count = 2
-            elif (num >> 3) == 0b11110:
-                count = 3
-            # If the byte starts with '10' or '11111', it's not a
-            #  valid start byte
-            elif num >> 7:
+        if n_bytes == 0:
+            # Initialize masks for checking the most significant bits of byte
+            mask1 = 1 << 7
+            mask2 = 1 << 6
+
+            # Count the number of most significant bits that are 1
+            while mask1 & byte:
+                n_bytes += 1
+                mask1 = mask1 >> 1
+                mask2 = mask2 >> 1
+
+            # If no most significant bits are 1, continue to next byte
+            if n_bytes == 0:
+                continue
+
+            # If only one most significant bit is 1 or more than four most
+            #  significant bits are 1, return False
+            if n_bytes == 1 or n_bytes > 4:
                 return False
         else:
-            # If a continuation byte is expected, check if the byte starts
-            #  with '10'
-            if (num >> 6) != 0b10:
+            # Initialize masks for checking the two most significant bits
+            #  of byte
+            mask1 = 1 << 7
+            mask2 = 1 << 6
+
+            # If the two most significant bits are not '10', return False
+            if not (byte & mask1 and not (byte & mask2)):
                 return False
+
             # Decrement the count of expected continuation bytes
-            count -= 1
+            n_bytes -= 1
 
     # If all bytes are processed and no continuation byte is expected,
     #  return True
-    return count == 0
+    return n_bytes == 0
