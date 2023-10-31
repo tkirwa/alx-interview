@@ -1,55 +1,84 @@
 #!/usr/bin/python3
 import sys
 
-
-def solve_nqueens(n):
-    def can_place(pos, ocuppied_positions):
-        for i in range(len(ocuppied_positions)):
-            if (
-                ocuppied_positions[i] == pos
-                or ocuppied_positions[i] - i == pos - len(ocuppied_positions)
-                or ocuppied_positions[i] + i == pos + len(ocuppied_positions)
-            ):
-                return False
-        return True
-
-    def place_queens(n, index, ocuppied_positions, all_ocuppied_positions):
-        if index == n:
-            all_ocuppied_positions.append(ocuppied_positions[:])
-            return
-
-        for i in range(n):
-            if can_place(i, ocuppied_positions):
-                ocuppied_positions.append(i)
-                place_queens(n, index + 1, ocuppied_positions,
-                             all_ocuppied_positions)
-                ocuppied_positions.pop()
-
-    all_ocuppied_positions = []
-    place_queens(n, 0, [], all_ocuppied_positions)
-    return all_ocuppied_positions
+""" The N queens puzzle is the challenge of placing N non-attacking
+ queens on an N×N chessboard
+"""
 
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: nqueens N")
-        exit(1)
+def is_safe(board, row, col, N):
+    """
+    Check if it's safe to place a queen at a given position (row, col)
+      on the board.
 
-    try:
-        n = int(sys.argv[1])
-    except ValueError:
-        print("N must be a number")
-        exit(1)
+    Args:
+    - board (list): The chessboard represented as a 2D list.
+    - row (int): The current row to check.
+    - col (int): The current column to check.
+    - N (int): The size of the board.
 
-    if n < 4:
+    Returns:
+    - bool: True if it's safe to place a queen at the given position,
+      False otherwise.
+    """
+    # Check if there is a queen in the same column
+    for i in range(row):
+        if board[i][col] == 1:
+            return False
+
+    # Check upper left diagonal
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+
+    # Check upper right diagonal
+    for i, j in zip(range(row, -1, -1), range(col, N)):
+        if board[i][j] == 1:
+            return False
+
+    return True
+
+
+def solve_nqueens(N, board, row):
+    """
+    Recursive function to solve the N Queens problem and print the solutions.
+
+    Args:
+    - N (int): The size of the board.
+    - board (list): The chessboard represented as a 2D list.
+    - row (int): The current row being considered.
+
+    Returns:
+    - None: The function prints solutions as a side effect.
+    """
+    if row == N:
+        solution = []
+        for i in range(N):
+            for j in range(N):
+                if board[i][j] == 1:
+                    solution.append([i, j])
+        print(solution)
+        return
+
+    for col in range(N):
+        if is_safe(board, row, col, N):
+            board[row][col] = 1
+            solve_nqueens(N, board, row + 1)
+            board[row][col] = 0
+
+
+if len(sys.argv) != 2:
+    print("Usage: nqueens N")
+    sys.exit(1)
+
+try:
+    N = int(sys.argv[1])
+    if N < 4:
         print("N must be at least 4")
-        exit(1)
+        sys.exit(1)
+except ValueError:
+    print("N must be a number")
+    sys.exit(1)
 
-    solutions = solve_nqueens(n)
-    for solution in solutions:
-        result = [[i, solution[i]] for i in range(n)]
-        print(result)
-
-
-if __name__ == "__main__":
-    main()
+board = [[0] * N for _ in range(N)]
+solve_nqueens(N, board, 0)
