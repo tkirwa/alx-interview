@@ -1,6 +1,6 @@
 #!/usr/bin/node
 // Import the request module
-const request = require("request");
+const request = require('request');
 
 // Get the movie ID from the command-line arguments
 const movieId = process.argv[2];
@@ -12,7 +12,7 @@ const url = `https://swapi-api.hbtn.io/api/films/${movieId}`;
 request(url, function (error, response, body) {
   if (error) {
     // If there's an error, log it
-    console.error("error:", error);
+    console.error('error:', error);
   } else {
     // Parse the response body to get the list of character URLs
     const characters = JSON.parse(body).characters;
@@ -22,12 +22,12 @@ request(url, function (error, response, body) {
 });
 
 // Function to print character names
-function printCharacters(characters, i) {
+function printCharacters (characters, i) {
   // Make a request to the Star Wars API to get a character's data
   request(characters[i], function (error, response, body) {
     if (error) {
       // If there's an error, log it
-      console.error("error:", error);
+      console.error('error:', error);
     } else {
       // Print the character's name
       console.log(JSON.parse(body).name);
