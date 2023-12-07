@@ -1,55 +1,56 @@
 #!/usr/bin/python3
+
+
 def isWinner(x, nums):
-    if not nums or x < 1:
-        return None
+    def is_prime(num):
+        if num < 2:
+            return False
+        for i in range(2, int(num**0.5) + 1):
+            if num % i == 0:
+                return False
+        return True
 
-    # Generate prime numbers up to max(nums)
-    primes = _generate_primes(max(nums))
+    def get_primes(n):
+        primes = []
+        for i in range(2, n + 1):
+            if is_prime(i):
+                primes.append(i)
+        return primes
 
-    # Determine the winner of each round
-    Maria_score = 0
-    Ben_score = 0
-    for num in nums:
-        winner = _play_round(num, primes)
-        if winner == "Maria":
-            Maria_score += 1
-        elif winner == "Ben":
-            Ben_score += 1
+    def play_round(n):
+        primes = get_primes(n)
+        turn = 0  # 0 for Maria, 1 for Ben
 
-    # Determine the overall winner
-    if Maria_score > Ben_score:
+        while n > 0:
+            current_prime = primes[0]
+            primes = primes[1:]
+
+            if turn == 0:
+                n -= current_prime
+            else:
+                n -= current_prime * (n // current_prime)
+
+            turn = 1 - turn
+
+        return turn
+
+    maria_wins = 0
+    ben_wins = 0
+
+    for i in range(x):
+        winner = play_round(nums[i])
+        if winner == 0:
+            maria_wins += 1
+        else:
+            ben_wins += 1
+
+    if maria_wins > ben_wins:
         return "Maria"
-    elif Ben_score > Maria_score:
+    elif ben_wins > maria_wins:
         return "Ben"
     else:
         return None
 
 
-def _generate_primes(n):
-    sieve = [True] * (n + 1)
-    p = 2
-    while p * p <= n:
-        if sieve[p]:
-            for i in range(p * p, n + 1, p):
-                sieve[i] = False
-        p += 1
-
-    primes = [p for p in range(2, n + 1) if sieve[p]]
-    return primes
-
-
-def _play_round(n, primes):
-    game_set = set(range(1, n + 1))
-    turn = "Maria"
-
-    while game_set:
-        for prime in primes:
-            if prime in game_set:
-                game_set -= set(range(prime, n + 1, prime))
-                break
-        else:
-            break
-
-        turn = "Ben" if turn == "Maria" else "Maria"
-
-    return turn
+if __name__ == "__main__":
+    print("Winner: {}".format(isWinner(5, [2, 5, 1, 4, 3])))
