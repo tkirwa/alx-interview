@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """
-This is a Python script that determines the winner of a game based on prime numbers.
+This is a Python script that determines the winner
+ of a game based on prime numbers.
 """
 
 def isWinner(x, nums):
@@ -9,10 +10,12 @@ def isWinner(x, nums):
     
     Parameters:
     x (int): The number of rounds in the game.
-    nums (list): A list of integers representing the maximum number for each round.
+    nums (list): A list of integers representing the maximum
+      number for each round.
 
     Returns:
-    str: The name of the winner ('Maria' or 'Ben') or None if it's a draw.
+    str: The name of the winner ('Maria' or 'Ben') or None
+      if it's a draw.
     """
     # Return None if there are no rounds or no maximum numbers
     if x < 1 or not nums:
