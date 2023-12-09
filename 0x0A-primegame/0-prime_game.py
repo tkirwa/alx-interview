@@ -37,7 +37,8 @@ def isWinner(x, nums):
 
     # Determine the winner of each round
     for _, n in zip(range(x), nums):
-        primes_count = len(list(filter(lambda x: x, primes[0: n])))
+        primes_count = len(list(filter(lambda x: x,
+                                        primes[0: n])))
         bens_wins += primes_count % 2 == 0
         marias_wins += primes_count % 2 == 1
 
