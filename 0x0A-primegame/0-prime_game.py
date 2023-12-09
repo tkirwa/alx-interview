@@ -3,11 +3,10 @@
 This is a Python script that determines the winner of a game based on prime numbers.
 """
 
-
-def is_winner(x, nums):
+def isWinner(x, nums):
     """
     This function determines the winner of the game.
-
+    
     Parameters:
     x (int): The number of rounds in the game.
     nums (list): A list of integers representing the maximum number for each round.
@@ -23,7 +22,7 @@ def is_winner(x, nums):
     n = max(nums)
 
     # Initialize a list of booleans representing prime numbers
-    primes = [True] * n
+    primes = [True for _ in range(1, n + 1, 1)]
     primes[0] = False
 
     # Use the Sieve of Eratosthenes to identify prime numbers
@@ -35,7 +34,7 @@ def is_winner(x, nums):
 
     # Determine the winner of each round
     for _, n in zip(range(x), nums):
-        primes_count = sum(primes[:n])
+        primes_count = len(list(filter(lambda x: x, primes[0: n])))
         bens_wins += primes_count % 2 == 0
         marias_wins += primes_count % 2 == 1
 
